@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
 import CreateIcon from "@mui/icons-material/Create";
-import ImageIcon from "@mui/icons-material/Image";
-import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
-import EventNoteIcon from "@mui/icons-material/EventNote";
-import CalendarViewDayIcon from "@mui/icons-material/CalendarViewDay";
-import InputOption from "./InputOption";
 import Post from "./Post";
 import { db } from "./firebase";
 import {
@@ -14,15 +9,23 @@ import {
   serverTimestamp,
   query,
   orderBy,
+  updateDoc,
+  doc,
+  getDoc,
 } from "firebase/firestore";
-import { selectUser } from "./features/userSlice";
-import { useSelector } from "react-redux";
+import {
+  selectBudget,
+  updateBudgetData,
+  addExpense,
+} from "./features/budgetSlice";
+import { useDispatch, useSelector } from "react-redux";
 import FlipMove from "react-flip-move";
 
 function Feed() {
+  const dispatch = useDispatch();
+  const budgetState = useSelector(selectBudget);
   const [input, setInput] = useState("");
   const [posts, setPosts] = useState([]);
-  const user = useSelector(selectUser);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -38,64 +41,98 @@ function Feed() {
     return () => unsubscribe();
   }, []);
 
-  const sendPost = (e) => {
+  const sendPost = async (e) => {
     e.preventDefault();
-    addDoc(collection(db, "posts"), {
-      name: user.displayName,
-      description: user.email,
-      message: input,
-      photoUrl: user.photoUrl || "",
-      timestamp: serverTimestamp(),
-    });
 
+    const amount = parseFloat(input) || 0;
+
+    await addDoc(collection(db, "posts"), {
+      amount,
+      timestamp: serverTimestamp(),
+      name: "Miscellaneous",
+    });
+    dispatch(addExpense({ amount }));
     setInput("");
   };
 
+  useEffect(() => {
+    const fetchBudgetData = async () => {
+      const budRef = doc(db, "budget", "budgetdoc");
+      const budSnap = await getDoc(budRef);
+
+      if (budSnap.exists()) {
+        const data = budSnap.data();
+        dispatch(
+          updateBudgetData({
+            totalBudget: data.Budget,
+            totalSpent: data.totalSpent,
+            safeToSpend: data.safeToSpend,
+          })
+        );
+      }
+    };
+
+    fetchBudgetData();
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (budgetState.totalSpent === 0) return;
+
+    const updateBudget = async () => {
+      const budRef = doc(db, "budget", "budgetdoc");
+      const totalSpent = budgetState.totalSpent;
+      const Budget = budgetState.totalBudget;
+      const safeToSpend = Number(budgetState.safeToSpend);
+      await updateDoc(budRef, {
+        totalSpent,
+        Budget,
+        safeToSpend,
+      });
+    };
+
+    updateBudget();
+  }, [budgetState]);
+
   return (
-    <div className="flex-[0.6] mx-[20px]">
-      <div
-        className="bg-white p-[10px] pb-[20px] rounded-[10px] 
-      mb-[20px] "
-      >
-        <div
-          className=" border-[1px] border-solid border-[lightgray] 
-        flex p-[10px]  text-[gray] pl-[15px] rounded-[30px]"
-        >
-          <CreateIcon />
-          <form className="flex w-[100%] ">
+    <div className="flex-[0.9] mx-[20px]">
+      <div className="bg-[#3A3A4D] p-[20px] rounded-[10px] mb-[20px]">
+        <div className="bg-[#2E2E3A] flex-col p-[10px] text-white pl-[15px] rounded-[30px] mb-10 pb-12 pt-12 border-[#555666] border-2">
+          <h2 className="text-2xl font-bold">
+            <span className="text-[#4DB8FF]">Total Spent: </span>₹
+            {budgetState.totalSpent}
+          </h2>
+          <h2 className="text-2xl font-bold">
+            <span className="text-[#4DB8FF]"> Budget: </span> {" ₹"}
+            {budgetState.totalBudget}
+          </h2>
+          <h2 className="text-2xl font-bold">
+            <span className="text-[#4DB8FF]">Safe to Spend:</span> ₹
+            {budgetState.safeToSpend} per day
+          </h2>
+        </div>
+        <div className="border-[1px] border-solid border-[#555666] flex p-[10px] text-[#A0A0A0] pl-[15px] rounded-[30px]">
+          <CreateIcon className="text-[#4DB8FF]" />
+          <form className="flex w-[100%] bg-[#2E2E3A] text-black rounded-[30px] ml-2">
             <input
               type="text"
               value={input}
-              onChange={(e) => setInput(e.target.value)}
-              className="text-black border-none flex-1 ml-[10px] outline-0 font-[600]"
+              onChange={(e) => {
+                const value = e.target.value;
+                setInput(value === "" ? "" : parseFloat(value) || "");
+              }}
+              className="text-white flex-1 ml-[10px] outline-0 font-semibold bg-[#2E2E3A] rounded-[30px]"
             />
             <button onClick={sendPost} type="submit" className="hidden">
               Send
             </button>
           </form>
         </div>
-        <div className="flex justify-evenly">
-          <InputOption Icon={ImageIcon} title="Photo" color="#70B5F9" />
-          <InputOption Icon={SubscriptionsIcon} title="Video" color="#E7A33E" />
-          <InputOption Icon={EventNoteIcon} title="Event" color="#C0CBCD" />
-          <InputOption
-            Icon={CalendarViewDayIcon}
-            title="Write article"
-            color="#7FC15E"
-          />
-        </div>
       </div>
 
       {/* Posts */}
       <FlipMove>
-        {posts.map(({ id, data: { name, description, message, photoUrl } }) => (
-          <Post
-            key={id}
-            name={name}
-            description={description}
-            message={message}
-            photoUrl={photoUrl}
-          />
+        {posts.map(({ id, data: { amount, name } }) => (
+          <Post key={id} amount={amount} documentId={id} name={name} />
         ))}
       </FlipMove>
     </div>

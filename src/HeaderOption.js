@@ -14,7 +14,7 @@ function HeaderOption({ avatar, Icon, title, onClick }) {
       {avatar && (
         <Avatar
           src={user?.photoUrl}
-          className="object-contain !h-[25px] !w-[25px]"
+          className="object-contain !h-[50px] !w-[50px]"
         >
           {user?.email[0]}
         </Avatar>

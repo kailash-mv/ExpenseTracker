@@ -18,10 +18,10 @@ function Sidebar() {
   );
 
   return (
-    <div className="ml-[200px] sticky top-[80px] flex-[0.2] rounded-[10px] text-center h-fit">
-      <div
+    <div className="ml-[200px] sticky top-[80px] flex-[0.2] rounded-[10px] text-center h-fit mt-5">
+      {/* <div
         className="flex flex-col items-center border-[1px] border-solid
-       border-[lightgray] border-b-[1px] rounded-tl-[10px] rounded-tr-[10px]
+       border-[lightgray] border-b-[2px] rounded-tl-[10px] rounded-[10px]
         bg-[white] pb-[10px] "
       >
         <img
@@ -36,12 +36,12 @@ function Sidebar() {
         </Avatar>
         <h2 className="font-bold text-black text-[18px]">{user.displayName}</h2>
         <h4 className="text-[gray] text-[12px] ">{user.email}</h4>
-      </div>
+      </div> */}
 
       {/* Sidebar stats */}
-      <div
+      {/* <div
         className="p-[10px] mb-[10px] rounded-[1px] 
-      border-solid  border-[lightgray] rounded-bl-[10px] rounded-br-[10px] bg-white border-[1px]"
+      border-solid  border-[lightgray]  rounded-br-[10px] bg-white border-[1px]"
       >
         <div className="mt-[10px] flex justify-between">
           <p className="text-[gray] text-[13px] font-[600]">Who viewed you</p>
@@ -52,7 +52,7 @@ function Sidebar() {
           <p className="text-[gray] text-[13px] font-[600]">Views on post</p>
           <p className="font-bold text-[#0a66c2] !important"> 2,043 </p>
         </div>
-      </div>
+      </div> */}
 
       {/* Sidebar bottom */}
       <div
