@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const API_URL = "http://localhost:3001/api";
+const API_URL = "https://expensetracker-backend-mn1g.onrender.com";
 const labels = ["Miscellaneous", "Food", "Medicine", "Dress"];
 
 function Widgets() {
