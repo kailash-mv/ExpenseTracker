@@ -5,7 +5,7 @@ const budgetSlice = createSlice({
   initialState: {
     totalBudget: 5000,
     totalSpent: 0,
-    safeToSpend: (5000 / 30).toFixed(2),
+    safeToSpend: 5000 / 30,
   },
   reducers: {
     addExpense: (state, action) => {
