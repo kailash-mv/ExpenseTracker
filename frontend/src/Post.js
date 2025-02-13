@@ -5,7 +5,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { selectBudget, removeExpense } from "./features/budgetSlice";
 
-const API_URL = "http://localhost:3001/api";
+const API_URL = "https://expensetracker-backend-mn1g.onrender.com";
 const categories = ["Food", "Dress", "Medicine", "Miscellaneous"];
 
 const Post = forwardRef(({ amount, documentId, name }, ref) => {
