@@ -18,11 +18,11 @@ function Feed() {
   const budgetState = useSelector(selectBudget);
   const [input, setInput] = useState("");
   const [posts, setPosts] = useState([]);
+  const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
     const fetchBudget = async () => {
       try {
-        const budgetResponse = await axios.get(`${API_URL}/budget`);
         dispatch(
           updateBudgetData({
             totalBudget: budgetResponse.data.totalBudget,
@@ -30,6 +30,7 @@ function Feed() {
             safeToSpend: budgetResponse.data.safeToSpend,
           })
         );
+        const budgetResponse = await axios.get(`${API_URL}/budget`);
       } catch (error) {
         console.error("Unable to dispatch:", error);
       }
@@ -46,7 +47,7 @@ function Feed() {
 
     fetchBudget();
     fetchExpenses();
-  }, [budgetState]);
+  }, [refresh]);
 
   const expenseFilter = async (name) => {
     try {
@@ -68,16 +69,25 @@ function Feed() {
       return;
     }
     try {
-      const expenseResponse = await axios.post(`${API_URL}/expenses`, {
-        amount,
-        name: "Miscellaneous",
-      });
-      dispatch(addExpense({ amount }));
       const updatedTotalSpent = budgetState.totalSpent + amount;
       const updatedSafeToSpend = (
         (budgetState.totalBudget - updatedTotalSpent) /
         30
       ).toFixed(2);
+
+      dispatch(
+        updateBudgetData({
+          totalBudget: budgetState.totalBudget,
+          totalSpent: updatedTotalSpent,
+          safeToSpend: updatedSafeToSpend,
+        })
+      );
+      const expenseResponse = await axios.post(`${API_URL}/expenses`, {
+        amount,
+        name: "Miscellaneous",
+      });
+
+      setRefresh((prev) => !prev);
 
       await axios.post(`${API_URL}/budget`, {
         totalSpent: updatedTotalSpent,
@@ -86,7 +96,6 @@ function Feed() {
       });
 
       await axios.post(`${API_URL}/data`, { amount, name: "Miscellaneous" });
-      setPosts((prevPosts) => [expenseResponse.data, ...prevPosts]);
       setInput("");
     } catch (error) {
       console.error("Error adding expense:", error);
@@ -154,10 +163,17 @@ function Feed() {
           </button>
         </form>
       </div>
-
       <div className="mt-6 bg-white p-6 rounded-lg shadow-md border border-gray-200 min-w-fit">
         {posts.map(({ _id, amount, name }) => (
-          <Post key={_id} amount={amount} documentId={_id} name={name} />
+          <FlipMove>
+            <Post
+              key={_id}
+              amount={amount}
+              documentId={_id}
+              name={name}
+              onDelete={() => setRefresh((prev) => !prev)}
+            />
+          </FlipMove>
         ))}
       </div>
     </div>
