@@ -8,7 +8,7 @@ import { selectBudget, removeExpense } from "./features/budgetSlice";
 const API_URL = "http://localhost:3001/api";
 const categories = ["Food", "Dress", "Medicine", "Miscellaneous"];
 
-const Post = forwardRef(({ amount, documentId, name }, ref) => {
+const Post = forwardRef(({ amount, documentId, name, onDelete }, ref) => {
   const dispatch = useDispatch();
   const budgetState = useSelector(selectBudget);
   const [editableName, setEditableName] = useState(name);
