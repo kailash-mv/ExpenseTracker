@@ -13,7 +13,7 @@ const Post = forwardRef(({ amount, documentId, name }, ref) => {
   const budgetState = useSelector(selectBudget);
   const [editableName, setEditableName] = useState(name);
 
-  async function deleteAction() {
+   async function deleteAction() {
     try {
       const updatedTotalSpent = budgetState.totalSpent - amount;
       const updatedSafeToSpend = (
@@ -34,6 +34,7 @@ const Post = forwardRef(({ amount, documentId, name }, ref) => {
         totalBudget: budgetState.totalBudget,
         safeToSpend: updatedSafeToSpend,
       });
+      onDelete();
     } catch (error) {
       console.error(error);
     }
