@@ -23,6 +23,7 @@ function Feed() {
   useEffect(() => {
     const fetchBudget = async () => {
       try {
+        const budgetResponse = await axios.get(`${API_URL}/budget`);
         dispatch(
           updateBudgetData({
             totalBudget: budgetResponse.data.totalBudget,
@@ -30,7 +31,6 @@ function Feed() {
             safeToSpend: budgetResponse.data.safeToSpend,
           })
         );
-        const budgetResponse = await axios.get(`${API_URL}/budget`);
       } catch (error) {
         console.error("Unable to dispatch:", error);
       }
@@ -82,17 +82,16 @@ function Feed() {
           safeToSpend: updatedSafeToSpend,
         })
       );
-      const expenseResponse = await axios.post(`${API_URL}/expenses`, {
-        amount,
-        name: "Miscellaneous",
-      });
-
-      setRefresh((prev) => !prev);
-
       await axios.post(`${API_URL}/budget`, {
         totalSpent: updatedTotalSpent,
         totalBudget: budgetState.totalBudget,
         safeToSpend: updatedSafeToSpend,
+      });
+
+      setRefresh((prev) => !prev);
+      await axios.post(`${API_URL}/expenses`, {
+        amount,
+        name: "Miscellaneous",
       });
 
       await axios.post(`${API_URL}/data`, { amount, name: "Miscellaneous" });
