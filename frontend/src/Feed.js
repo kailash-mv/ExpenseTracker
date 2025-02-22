@@ -88,7 +88,7 @@ function Feed() {
         safeToSpend: updatedSafeToSpend,
       });
 
-      setRefresh((prev) => !prev);
+    setTimeout(() => setRefresh((prev) => !prev), 500);
       await axios.post(`${API_URL}/expenses`, {
         amount,
         name: "Miscellaneous",
