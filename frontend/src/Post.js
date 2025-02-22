@@ -67,10 +67,10 @@ const Post = forwardRef(({ amount, documentId, name, onDelete }, ref) => {
   };
 
   return (
-    <div
+  <div
       ref={ref}
       className="p-2 mb-1 rounded-lg shadow-sm border-[gray] 
-      border-[1px] grid grid-cols-4 items-center mx-[22px] justify-evenly"
+  border-[1px] grid grid-cols-3 items-center"
     >
       <select
         value={editableName}
@@ -84,16 +84,18 @@ const Post = forwardRef(({ amount, documentId, name, onDelete }, ref) => {
         ))}
       </select>
 
-      <div className="text-base font-bold justify-center pl-[70px]">
+      <div className="text-base font-bold text-center ml-[100px]">
         ₹{amount}
       </div>
 
-      <InputOption
-        Icon={DeleteRoundedIcon}
-        title="Delete"
-        color="#FF6B6B"
-        onClick={deleteAction}
-      />
+      <div className="flex justify-center">
+        <InputOption
+          Icon={DeleteRoundedIcon}
+          title="Delete"
+          color="#FF6B6B"
+          onClick={deleteAction}
+        />
+      </div>
     </div>
   );
 });
