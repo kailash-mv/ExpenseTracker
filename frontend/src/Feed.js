@@ -11,7 +11,7 @@ import FlipMove from "react-flip-move";
 import axios from "axios";
 import Widgets from "./Widgets";
 
-const API_URL = "https://expensetracker-backend-mn1g.onrender.com/api";
+const API_URL = "http://localhost:3001/api";
 
 function Feed() {
   const dispatch = useDispatch();
@@ -88,7 +88,7 @@ function Feed() {
         safeToSpend: updatedSafeToSpend,
       });
 
-    setTimeout(() => setRefresh((prev) => !prev), 500);
+      setRefresh((prev) => !prev);
       await axios.post(`${API_URL}/expenses`, {
         amount,
         name: "Miscellaneous",
@@ -138,12 +138,12 @@ function Feed() {
           </ul>
         </div>
 
-        <div className="w-80 flex-shrink-0">
+        <div className="w-80 flex-shrink-0 hidden sm:block">
           <Widgets />
         </div>
       </div>
 
-      <div className="flex items-center bg-white p-4 rounded-lg shadow-md border border-gray-300 mt-6">
+      <div className="flex items-center bg-white p-4 min-w-full rounded-lg shadow-md border border-gray-300 mt-6">
         <CreateIcon className="text-blue-500" />
         <form className="flex w-full">
           <input
@@ -156,13 +156,13 @@ function Feed() {
           <button
             onClick={sendPost}
             type="submit"
-            className="ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all"
+            className="hidden sm:block ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all"
           >
             Add
           </button>
         </form>
       </div>
-      <div className="mt-6 bg-white p-6 rounded-lg shadow-md border border-gray-200 min-w-fit">
+      <div className="mt-6 bg-white p-6 rounded-lg shadow-md border border-gray-200 min-w-full sm:min-w-fit">
         {posts.map(({ _id, amount, name }) => (
           <FlipMove>
             <Post
