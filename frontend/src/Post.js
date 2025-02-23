@@ -5,7 +5,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { selectBudget, removeExpense } from "./features/budgetSlice";
 
-const API_URL = "https://expensetracker-backend-mn1g.onrender.com/api";
+const API_URL = "http://localhost:3001/api";
 const categories = ["Food", "Dress", "Medicine", "Miscellaneous"];
 
 const Post = forwardRef(({ amount, documentId, name, onDelete }, ref) => {
@@ -13,7 +13,7 @@ const Post = forwardRef(({ amount, documentId, name, onDelete }, ref) => {
   const budgetState = useSelector(selectBudget);
   const [editableName, setEditableName] = useState(name);
 
-   async function deleteAction() {
+  async function deleteAction() {
     try {
       const updatedTotalSpent = budgetState.totalSpent - amount;
       const updatedSafeToSpend = (
@@ -67,7 +67,7 @@ const Post = forwardRef(({ amount, documentId, name, onDelete }, ref) => {
   };
 
   return (
-  <div
+    <div
       ref={ref}
       className="p-2 mb-1 rounded-lg shadow-sm border-[gray] 
   border-[1px] grid grid-cols-3 items-center"
@@ -84,16 +84,17 @@ const Post = forwardRef(({ amount, documentId, name, onDelete }, ref) => {
         ))}
       </select>
 
-      <div className="text-base font-bold text-center ml-[100px]">
+      <div className="text-base font-bold text-center ml-[80px] sm:ml-[100px]">
         ₹{amount}
       </div>
 
-      <div className="flex justify-center">
+      <div className="flex justify-end sm:justify-center">
         <InputOption
           Icon={DeleteRoundedIcon}
           title="Delete"
           color="#FF6B6B"
           onClick={deleteAction}
+          className="ml-4"
         />
       </div>
     </div>
