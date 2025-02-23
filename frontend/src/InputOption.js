@@ -8,7 +8,7 @@ function InputOption({ Icon, title, color, onClick }) {
       onClick={onClick}
     >
       <Icon style={{ color: color }} />
-      <h4 className="ml-[5px]">{title}</h4>
+      <h4 className="ml-[5px] hidden sm:block">{title}</h4>
     </div>
   );
 }
