@@ -11,7 +11,7 @@ import FlipMove from "react-flip-move";
 import axios from "axios";
 import Widgets from "./Widgets";
 
-const API_URL = process.env.MONGO_URI;
+const API_URL = "https://expensetracker-backend-mn1g.onrender.com/api";
 
 function Feed() {
   const dispatch = useDispatch();
