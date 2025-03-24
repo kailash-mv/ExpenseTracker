@@ -11,7 +11,7 @@ import FlipMove from "react-flip-move";
 import axios from "axios";
 import Widgets from "./Widgets";
 
-const API_URL = "http://localhost:3001/api";
+const API_URL = process.env.MONGO_URI;
 
 function Feed() {
   const dispatch = useDispatch();
