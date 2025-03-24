@@ -18,6 +18,7 @@ function Feed() {
   const budgetState = useSelector(selectBudget);
   const [input, setInput] = useState("");
   const [posts, setPosts] = useState([]);
+  const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
     const fetchBudget = async () => {
@@ -46,7 +47,7 @@ function Feed() {
 
     fetchBudget();
     fetchExpenses();
-  }, [budgetState]);
+  }, [refresh]);
 
   const expenseFilter = async (name) => {
     try {
@@ -68,25 +69,32 @@ function Feed() {
       return;
     }
     try {
-      const expenseResponse = await axios.post(`${API_URL}/expenses`, {
-        amount,
-        name: "Miscellaneous",
-      });
-      dispatch(addExpense({ amount }));
       const updatedTotalSpent = budgetState.totalSpent + amount;
       const updatedSafeToSpend = (
         (budgetState.totalBudget - updatedTotalSpent) /
         30
       ).toFixed(2);
 
+      dispatch(
+        updateBudgetData({
+          totalBudget: budgetState.totalBudget,
+          totalSpent: updatedTotalSpent,
+          safeToSpend: updatedSafeToSpend,
+        })
+      );
       await axios.post(`${API_URL}/budget`, {
         totalSpent: updatedTotalSpent,
         totalBudget: budgetState.totalBudget,
         safeToSpend: updatedSafeToSpend,
       });
 
+      setRefresh((prev) => !prev);
+      await axios.post(`${API_URL}/expenses`, {
+        amount,
+        name: "Miscellaneous",
+      });
+
       await axios.post(`${API_URL}/data`, { amount, name: "Miscellaneous" });
-      setPosts((prevPosts) => [expenseResponse.data, ...prevPosts]);
       setInput("");
     } catch (error) {
       console.error("Error adding expense:", error);
@@ -130,12 +138,12 @@ function Feed() {
           </ul>
         </div>
 
-        <div className="w-80 flex-shrink-0">
+        <div className="w-80 flex-shrink-0 hidden sm:block">
           <Widgets />
         </div>
       </div>
 
-      <div className="flex items-center bg-white p-4 rounded-lg shadow-md border border-gray-300 mt-6">
+      <div className="flex items-center bg-white p-4 min-w-full rounded-lg shadow-md border border-gray-300 mt-6">
         <CreateIcon className="text-blue-500" />
         <form className="flex w-full">
           <input
@@ -148,16 +156,23 @@ function Feed() {
           <button
             onClick={sendPost}
             type="submit"
-            className="ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all"
+            className="hidden sm:block ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all"
           >
             Add
           </button>
         </form>
       </div>
-
-      <div className="mt-6 bg-white p-6 rounded-lg shadow-md border border-gray-200 min-w-fit">
+      <div className="mt-6 bg-white p-6 rounded-lg shadow-md border border-gray-200 min-w-full sm:min-w-fit">
         {posts.map(({ _id, amount, name }) => (
-          <Post key={_id} amount={amount} documentId={_id} name={name} />
+          <FlipMove>
+            <Post
+              key={_id}
+              amount={amount}
+              documentId={_id}
+              name={name}
+              onDelete={() => setRefresh((prev) => !prev)}
+            />
+          </FlipMove>
         ))}
       </div>
     </div>
